@@ -26,40 +26,63 @@ contract EquityToken is ERC20Upgradeable, OwnableUpgradeable, PausableUpgradeabl
         _;
     }
 
-
-function init(
-   
-    string calldata name,
-    string calldata sym,
-    //need to be allowlisted
-    IAllowedList _iAllowedList,
-    uint256 totalSupply,
-    bytes32 salt
-) external payable returns (address) {
-
-    _validateCommitment(salt, name);
-
-     Coin init =
-        new Coin{ salt: salt, value: msg.value}(name, sym, totalSupply * 1e18, msg.sender, teamBps, liquidityLockPeriodInSeconds);
-        if (teamBps < 10000) {
-            ///@solidity memory-safe-assembly
-            assembly {
-                let success := call(gas(), meme, 0, 0, 0, 0, 0)
-                if iszero(success) {
-                    returndatacopy(0, 0, returndatasize())
-                    revert(0, returndatasize())
-                }
-            }
-        }
-
-    collectiontokentype[_nft] = address(meme);
-
-    assembly {
-            mstore(0, meme)
-            return(0, 0x20)
-
-        }
-
+    function initialize(
+        string memory _name,
+        string memory _symbol,
+        string memory _baseURI,
+        IAllowedList _iAllowedList
+    ) public initializer {
+        __Ownable_init();
+        __ERC20_init(_name, _symbol);
+        __ERC20Pausable_init();
+        baseURI = _baseURI;
+        allowedList = _iAllowedList;
     }
 
+    function creatItem(address _customer, uint256 _amount) public onlyOwner {
+        _mint(_customer, _amount);
+    }
 
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    function unpause() public onlyOwner {
+        _unpause();
+    }
+
+    function burn(address _customer, uint256 _amount) public onlyOwner {
+        //solhint-disable-next-line max-line-length
+        _burn(_customer, _amount);
+    }
+
+    function isInAllowedList(address _address) external view {
+        _isInAllowedList(_address);
+    }
+
+    function checkAllowedList(address _address) external view returns (bool) {
+
+        return allowedList.checkAllowedList(_address);
+    }
+
+    function _isInAllowedList(address _address) internal view {
+
+        require(allowedList.checkAllowedList(_address),"EquityToken: address is not on allowed list");
+    }
+    
+   function __ERC20Pausable_init() internal onlyInitializing {
+        __Pausable_init_unchained();
+    }
+
+    function __ERC20Pausable_init_unchained() internal onlyInitializing {
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
+        super._beforeTokenTransfer(from, to, amount);
+
+        require(allowedList.checkAllowedList(to),"EquityToken: address is not on allowed list");
+        require(!paused(), "EquityToken: token transfer while paused");
+    }
+    uint256[50] private __gap;
+
+}

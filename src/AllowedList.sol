@@ -1,7 +1,7 @@
 pragma solidity ^0.8.18;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/access/OwnableUpgradeable.sol";
+import "@openzeppelin/security/PausableUpgradeable.sol";
 import "./IAllowedList.sol";
 
 contract AllowedList is IAllowedList, OwnableUpgradeable, PausableUpgradeable {
