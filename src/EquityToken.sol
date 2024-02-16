@@ -8,16 +8,18 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./IAllowedList.sol";
 import "../src/AkcjaToken.sol";
-
+import "../src/ITokenFactory.sol";
 contract EquityToken is  OwnableUpgradeable, PausableUpgradeable {
 
 
 
-    function createToken(address company, string memory name, string memory symbol, uint256 initialSupply) public returns (address) {
+    function createToken(string memory name, string memory symbol, uint256 initialSupply) public returns (address) {
        AkcjaToken newToken = new AkcjaToken(initialSupply);
-        return address(newToken);
+       newToken.setName(name);
+      newToken.setSymbol(symbol);
         
     }
+
 
 function createAkcja(
     string calldata name,
@@ -28,7 +30,7 @@ function createAkcja(
 
 
      EquityTok akcja =
-        new  EquityTok( initialSupply);
+        new  EquityTok(initialSupply);
           {
             ///@solidity memory-safe-assembly
             assembly {

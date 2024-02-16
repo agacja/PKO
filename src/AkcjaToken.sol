@@ -12,19 +12,26 @@ contract AkcjaToken
 
     constructor(uint256 initialSupply) {
         _mint(msg.sender, initialSupply);
-    
+    }
 
     function name() public view override returns (string memory) {
         return _name;
     }
 
-    // Overriding the symbol function to return the custom token symbol.
+
     function symbol() public view override returns (string memory) {
         return _symbol;
     }
 
-    //funkcja do pauzowania kontkretnych
+    .
+    function setName(string memory newName) public onlyOwner {
+        _name = newName;
+    }
 
+    function setSymbol(string memory newSymbol) public onlyOwner {
+        _symbol = newSymbol;
+    }
+}
 
 
 }
