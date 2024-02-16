@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "solady/scrc/token/ERC20.sol";
-import "solady/src/auth/Ownable.sol";
+import "solady/token/ERC20.sol";
+import "solady/auth/Ownable.sol";
 
 contract AkcjaToken is ERC20 {
     string private _name;
