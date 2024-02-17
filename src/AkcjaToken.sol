@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "solady/token/ERC20.sol";
+error NotAllowed();
+error SaleClosed();
+
+import "solady/tokens/ERC20.sol";
 import "solady/auth/Ownable.sol";
 
-contract AkcjaToken is ERC20 {
+contract AkcjaToken is ERC20, Ownable {
     string private _name;
     string private _symbol;
-
+    uint8 private State;
+  
     constructor(uint256 initialSupply) {
         _mint(msg.sender, initialSupply);
     }
@@ -24,7 +28,30 @@ contract AkcjaToken is ERC20 {
         _name = newName;
     }
 
+ function burn(address _customer, uint256 _amount) public onlyOwner {
+        _burn(_customer, _amount);
+    }
+
     function setSymbol(string memory newSymbol) public onlyOwner {
         _symbol = newSymbol;
     }
+
+    function setStateforToken(uint8 value) external onlyOwner {
+        State = value;
+    }
+
+
+
+function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+    if (State == 0) revert SaleClosed();
+
+    return super.transfer(recipient, amount);
 }
+
+// Override transferFrom function
+function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
+    if (State == 0) revert SaleClosed();
+
+    return super.transferFrom(sender, recipient, amount);
+}}
+

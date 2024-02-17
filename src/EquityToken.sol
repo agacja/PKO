@@ -1,36 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
-
-import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "./IAllowedList.sol";
+import "solady/auth/Ownable.sol";
 import "../src/AkcjaToken.sol";
 import "../src/ITokenFactory.sol";
-contract EquityToken is  OwnableUpgradeable, PausableUpgradeable {
+contract EquityToken is Ownable {
 
 
 
-    function createToken(string memory name, string memory symbol, uint256 initialSupply) public returns (address) {
+    function createToken(string memory name, string memory symbol, uint256 initialSupply) public  {
        AkcjaToken newToken = new AkcjaToken(initialSupply);
        newToken.setName(name);
-      newToken.setSymbol(symbol);
+       newToken.setSymbol(symbol);
         
     }
 
 
-function createAkcja(
+  function createAkcja(
     string calldata name,
     string calldata sym,
     uint256 initialSupply
   
 ) external payable returns (address) {
 
-
-     EquityTok akcja =
-        new  EquityTok(initialSupply);
+     AkcjaToken akcja =
+        new  AkcjaToken(initialSupply);
           {
             ///@solidity memory-safe-assembly
             assembly {

@@ -1,12 +1,30 @@
-pragma solidity ^0.8.18;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "solady/tokens/ERC20.sol";
+import "solady/auth/Ownable.sol";
 
-contract StableCoin is ERC20Upgradeable {
+contract AkcjaToken is ERC20, Ownable {
+    string private _name;
+    string private _symbol;
 
-    function initialize(string memory name, string memory symbol)  public initializer {
-        __ERC20_init(name, symbol);
-        _mint( msg.sender, 1000000000); 
+    constructor(uint256 initialSupply) {
+        _mint(msg.sender, initialSupply);
+    }
+
+    function name() public view override returns (string memory) {
+        return _name;
+    }
+
+    function symbol() public view override returns (string memory) {
+        return _symbol;
+    }
+
+    function setName(string memory newName) public onlyOwner {
+        _name = newName;
+    }
+
+    function setSymbol(string memory newSymbol) public onlyOwner {
+        _symbol = newSymbol;
     }
 }
