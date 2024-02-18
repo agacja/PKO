@@ -8,8 +8,6 @@ import "solady/tokens/ERC20.sol";
 import "solady/auth/Ownable.sol";
 
 contract StableCoin is ERC20, Ownable {
- 
-
     bytes32 immutable _NAME;
     bytes32 immutable _SYMBOL;
 
@@ -41,12 +39,9 @@ contract StableCoin is ERC20, Ownable {
         _SYMBOL = _symbol;
     }
 
-
-  function mint( uint256 amount) external onlyOwner() {
-        
-        _mint(owner, amount);
+    function mint(uint256 amount) external onlyOwner {
+        _mint(owner(), amount);
     }
-
 
     function name() public view override returns (string memory) {
         bytes32 name_ = _NAME;
@@ -68,6 +63,5 @@ contract StableCoin is ERC20, Ownable {
             // can't override this as external, so note that this will break internal methods that try to call as public
             return(0, 0x60)
         }
-
     }
 }

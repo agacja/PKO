@@ -46,9 +46,8 @@ contract AkcjaToken is ERC20, Ownable {
         _SYMBOL = _symbol;
     }
 
-      function mint( uint256 amount) external onlyOwner() {
-        
-        _mint(owner, amount);
+    function mint(uint256 amount) external onlyOwner {
+        _mint(owner(), amount);
     }
 
     function name() public view override returns (string memory) {

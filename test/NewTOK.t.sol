@@ -19,7 +19,12 @@ contract NewTOKTest is Test {
     address public seller = address(0x3);
 
     function setUp() public {
-        stableCoin = new StableCoin(1000000000000000000000000000);
+        stableCoin = new StableCoin(
+            "StableCoin",
+            "SC",
+            bank,
+            1000000000000000000000000000
+        );
         tok = new TOK(IERC20(address(stableCoin)), bank);
         equityToken = new EquityToken();
         orlen = AkcjaToken(
@@ -29,6 +34,7 @@ contract NewTOKTest is Test {
                 1000000000000000000000000000
             )
         );
+        vm.prank(bank);
         stableCoin.transfer(buyer, 1000000000000000000000000000);
         orlen.transfer(seller, 1000000000000000000000000000);
     }
