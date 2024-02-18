@@ -11,17 +11,6 @@ contract EquityToken is Ownable {
         uint256 totalSupply
     ) external payable returns (address) {
         AkcjaToken akcja = new AkcjaToken(name, sym, msg.sender, totalSupply);
-        // if (teamBps < 10000) {
-        ///@solidity memory-safe-assembly
-        //  assembly {
-        //   let success := call(gas(), meme, 0, 0, 0, 0, 0)
-        //    if iszero(success) {
-        //        returndatacopy(0, 0, returndatasize())
-        //        revert(0, returndatasize())
-        //    }
-        //  }
-        //   }
-
         assembly {
             mstore(0, akcja)
             return(0, 0x20)

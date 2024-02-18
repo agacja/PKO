@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-error NotAllowed();
-error SaleClosed();
 
 import "solady/tokens/ERC20.sol";
 import "solady/auth/Ownable.sol";
@@ -19,7 +17,7 @@ contract StableCoin is ERC20, Ownable {
     ) {
         bytes32 _name;
         bytes32 _symbol;
-        ///@solidity memory-safe-assembly
+      
         assembly {
             let nameLen := mload(name_)
             let symLen := mload(sym)
@@ -27,7 +25,7 @@ contract StableCoin is ERC20, Ownable {
             // load the last byte encoding length of each string plus the next 31 bytes
             _name := mload(add(31, name_))
             _symbol := mload(add(31, sym))
-            // add timestamp to liquidity lock period
+         
         }
         // assign owner
         _initializeOwner(_deployer);

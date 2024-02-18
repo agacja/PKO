@@ -2,17 +2,7 @@
 
 pragma solidity ^0.8.18;
 
-error NotOrderOwner();
-error InsufficientBalanceToRefund();
-error OrderDoesNotExist();
-error InsufficientBalanceForTransaction();
-error insufficientEquityToken();
-error WrongEquityToken();
-error ExceedsOrderAmount();
-error NotTokenOwner();
-error InsufficientEquityTokenAmount();
-error ContractIsTokenOwner();
-error InvalidTokenAddress();
+
 error InvalidOperation();
 error NotAuthorizedToCancelOrder();
 
@@ -150,6 +140,6 @@ contract TOK is Ownable {
         // Void order
         delete orders[_orderId];
 
-      //  emit TransactionExecuted(_orderId, buyer, totalOrderAmount);
+    
     }
 }
