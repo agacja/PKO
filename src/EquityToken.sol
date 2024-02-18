@@ -15,7 +15,7 @@ function createAkcja(
 
 
      Coin akcja =
-        new Coin{ value: msg.value}( name, sym, msg.sender, totalSupply);
+        new Coin( name, sym, msg.sender, totalSupply);
        // if (teamBps < 10000) {
             ///@solidity memory-safe-assembly
           //  assembly {

@@ -27,7 +27,7 @@ contract Coin is ERC20, Ownable {
         address _deployer,
         uint256 fullTotalSupply
 
-    ) payable {
+    )  {
         bytes32 _name;
         bytes32 _symbol;
         ///@solidity memory-safe-assembly
