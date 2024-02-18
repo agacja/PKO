@@ -6,37 +6,26 @@ import "../src/ITokenFactory.sol";
 contract EquityToken is Ownable {
 
 
-
-    function createToken(string memory name, string memory symbol, uint256 initialSupply) public  {
-       AkcjaToken newToken = new AkcjaToken(initialSupply);
-       newToken.setName(name);
-       newToken.setSymbol(symbol);
-        
-    }
-
-
-  function createAkcja(
+ 
+function createAkcja(
     string calldata name,
     string calldata sym,
-    uint256 initialSupply
-  
+    uint256 totalSupply
 ) external payable returns (address) {
 
-     AkcjaToken akcja =
-        new  AkcjaToken(initialSupply);
-        akcja.setName(name);
-        akcja.setSymbol(sym);
 
-          {
+     Coin akcja =
+        new Coin{ value: msg.value}( name, sym, msg.sender, totalSupply);
+       // if (teamBps < 10000) {
             ///@solidity memory-safe-assembly
-            assembly {
-                let success := call(gas(), akcja, 0, 0, 0, 0, 0)
-                if iszero(success) {
-                    returndatacopy(0, 0, returndatasize())
-                    revert(0, returndatasize())
-                }
-            }
-        }
+          //  assembly {
+             //   let success := call(gas(), meme, 0, 0, 0, 0, 0)
+            //    if iszero(success) {
+            //        returndatacopy(0, 0, returndatasize())
+            //        revert(0, returndatasize())
+            //    }
+          //  }
+     //   }
 
     assembly {
             mstore(0, akcja)
@@ -44,4 +33,6 @@ contract EquityToken is Ownable {
 
         }
 
-}}
+    }
+
+}
