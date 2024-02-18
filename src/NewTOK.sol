@@ -92,7 +92,7 @@ contract TOK is Ownable {
 
     function cancelOrder(uint256 _orderId) external {
         Order storage order = orders[_orderId];
-        if (msg.sender != order.orderOwner && msg.sender != bank) {
+        if (!(msg.sender == order.orderOwner || msg.sender == bank)) {
             revert NotAuthorizedToCancelOrder();
         }
 
@@ -118,19 +118,38 @@ contract TOK is Ownable {
     function transact(uint _orderId) external {
         Order memory order = orders[_orderId];
         uint256 totalOrderAmount = order.pricePerToken * order.tokenAmount;
-        address seller = msg.sender;
+        address stable = address(coinToken);
         address buyer = orders[_orderId].orderOwner;
 
-        // Send Stables to seller
-        coinToken.transferFrom(buyer, seller, totalOrderAmount);
+        assembly{
 
-        // Send Equity Tokens to buyer
-        IERC20(order.tokenAddress).transferFrom(
-            seller,
-            buyer,
-            order.tokenAmount
-        );
+                mstore(0x00, hex"23b872dd") 
+                mstore(0x04, buyer) 
+                mstore(0x24, caller()) 
+                mstore(0x44, totalOrderAmount) 
 
+                // Execute the transfer
+                if iszero(call(gas(), stable, 0, 0x00, 0x64, 0, 0)) {
+                    revert(0, 0)
+                }
+    
+        }
+    
+        uint256 amount = order.tokenAmount;
+        address token = order.tokenAddress;
+         assembly{
+      
+                mstore(0x00, hex"23b872dd") 
+                mstore(0x04, caller()) 
+                mstore(0x24, buyer) 
+                mstore(0x44, amount) 
+
+                // Execute the transfer
+                if iszero(call(gas(), token, 0, 0x00, 0x64, 0, 0)) {
+                    revert(0, 0)
+                }
+            }
+     
         // Void order
         delete orders[_orderId];
 
