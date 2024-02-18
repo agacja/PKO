@@ -24,6 +24,9 @@ contract EquityToken is Ownable {
 
      AkcjaToken akcja =
         new  AkcjaToken(initialSupply);
+        akcja.setName(name);
+        akcja.setSymbol(sym);
+
           {
             ///@solidity memory-safe-assembly
             assembly {
