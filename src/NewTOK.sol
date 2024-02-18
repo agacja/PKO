@@ -150,6 +150,6 @@ contract TOK is Ownable {
         // Void order
         delete orders[_orderId];
 
-        emit TransactionExecuted(_orderId, buyer, totalOrderAmount);
+      //  emit TransactionExecuted(_orderId, buyer, totalOrderAmount);
     }
 }
