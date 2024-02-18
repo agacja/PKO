@@ -79,31 +79,25 @@ contract TOK is Ownable {
                 )
             )
         );
-        uint256 totalOrderAmount = _price * _tokenAmount;
-        address coinTokenAddress = address(coinToken);
 
-     
         orders[orderId] = Order({
             orderOwner: msg.sender,
             tokenAddress: _tokenAddress,
             tokenAmount: _tokenAmount,
             pricePerToken: _price,
-            ppraFee: true,
-            active: true
+            ppraFee: true
         });
         emit OrderCreated(orderId, msg.sender, _tokenAmount, _price);
     }
 
-
     function cancelOrder(uint256 _orderId) external {
-        
-         Order storage order = orders[_orderId];
-    if (msg.sender != order.orderOwner && msg.sender != bank) {
-        revert NotAuthorizedToCancelOrder();
-    }
-       
-     delete orders[_orderId];
-       
+        Order storage order = orders[_orderId];
+        if (msg.sender != order.orderOwner && msg.sender != bank) {
+            revert NotAuthorizedToCancelOrder();
+        }
+
+        delete orders[_orderId];
+
         emit OrderCancelled(_orderId);
     }
 
@@ -115,6 +109,31 @@ contract TOK is Ownable {
             revert NotAuthorizedToCancelOrder();
         }
 
-      delete orders[_orderId];
+        delete orders[_orderId];
+    }
+
+    // Buyer has to approve the contract to spend the stable coin
+    // Seller has to approve the contract to spend the equity token
+
+    function transact(uint _orderId) external {
+        Order memory order = orders[_orderId];
+        uint256 totalOrderAmount = order.pricePerToken * order.tokenAmount;
+        address seller = msg.sender;
+        address buyer = orders[_orderId].orderOwner;
+
+        // Send Stables to seller
+        coinToken.transferFrom(buyer, seller, totalOrderAmount);
+
+        // Send Equity Tokens to buyer
+        IERC20(order.tokenAddress).transferFrom(
+            seller,
+            buyer,
+            order.tokenAmount
+        );
+
+        // Void order
+        delete orders[_orderId];
+
+        emit TransactionExecuted(_orderId, buyer, totalOrderAmount);
     }
 }
