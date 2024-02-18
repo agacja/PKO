@@ -31,7 +31,6 @@ contract TOK is Ownable {
         uint256 tokenAmount;
         uint256 pricePerToken;
         bool ppraFee;
-        bool active;
     }
 
     mapping(uint256 => Order) public orders;
@@ -83,17 +82,7 @@ contract TOK is Ownable {
         uint256 totalOrderAmount = _price * _tokenAmount;
         address coinTokenAddress = address(coinToken);
 
-        assembly {
-            mstore(0x00, hex"23b872dd")
-            mstore(0x04, caller())
-            mstore(0x24, address())
-            mstore(0x44, totalOrderAmount)
-
-            //hardcodowanie tokenu stablecoina CZY LEPIEJ TAK?
-            if iszero(call(gas(), coinTokenAddress, 0, 0x00, 0x64, 0, 0)) {
-                revert(0, 0)
-            }
-        }
+     
         orders[orderId] = Order({
             orderOwner: msg.sender,
             tokenAddress: _tokenAddress,
@@ -105,65 +94,27 @@ contract TOK is Ownable {
         emit OrderCreated(orderId, msg.sender, _tokenAmount, _price);
     }
 
+
     function cancelOrder(uint256 _orderId) external {
-        if (!(orderToOwner[_orderId] == msg.sender || msg.sender == bank)) {
-            revert NotAuthorizedToCancelOrder();
-        }
-
-        uint256 refundAmount = orderPrices[_orderId] *
-            orderTokenAmounts[_orderId];
-
-        if (stableCoinBalance[msg.sender] < refundAmount) {
-            revert InsufficientBalanceToRefund();
-        }
-
-        stableCoinBalance[msg.sender] -= refundAmount;
-
-        assembly {
-            let tok := sload(coinToken.slot)
-            mstore(0x00, hex"23b872dd")
-            mstore(0x04, address())
-            mstore(0x24, caller())
-            mstore(0x44, refundAmount)
-
-            if iszero(call(gas(), tok, 0, 0x00, 0x64, 0, 0)) {
-                revert(0, 0)
-            }
-        }
-
-        delete orderToOwner[_orderId];
-        delete orderPrices[_orderId];
-        delete orderTokenAmounts[_orderId];
-        delete orderTokenAddresses[_orderId];
-
+        
+         Order storage order = orders[_orderId];
+    if (msg.sender != order.orderOwner && msg.sender != bank) {
+        revert NotAuthorizedToCancelOrder();
+    }
+       
+     delete orders[_orderId];
+       
         emit OrderCancelled(_orderId);
     }
 
     function cancelOrderByTokenOwner(uint256 _orderId) external {
-        address akcjaTokenAddress = orderTokenAddresses[_orderId];
-        IAkcjaToken akcjaToken = IAkcjaToken(akcjaTokenAddress);
+        Order storage order = orders[_orderId];
+        IAkcjaToken akcjaToken = IAkcjaToken(order.tokenAddress);
 
         if (!(msg.sender == akcjaToken.owner() || msg.sender == bank)) {
             revert NotAuthorizedToCancelOrder();
         }
 
-        uint256 _amount = orderTokenAmounts[_orderId];
-
-        assembly {
-            mstore(0x00, hex"23b872dd")
-            mstore(0x04, caller())
-            mstore(0x24, address())
-            mstore(0x44, _amount)
-
-            if iszero(call(gas(), akcjaTokenAddress, 0, 0x00, 0x64, 0, 0)) {
-                revert(0, 0)
-            }
-        }
-
-        // Clean up the order mappings
-        delete orderToOwner[_orderId];
-        delete orderPrices[_orderId];
-        delete orderTokenAmounts[_orderId];
-        delete orderTokenAddresses[_orderId];
+      delete orders[_orderId];
     }
 }
