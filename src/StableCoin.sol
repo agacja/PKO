@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import "solady/tokens/ERC20.sol";
 import "solady/auth/Ownable.sol";
 
-contract AkcjaToken is ERC20, Ownable {
+contract StableCoin is ERC20, Ownable {
     string private _name;
     string private _symbol;
 

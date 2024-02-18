@@ -121,35 +121,32 @@ contract TOK is Ownable {
         address stable = address(coinToken);
         address buyer = orders[_orderId].orderOwner;
 
-        assembly{
+        assembly {
+            mstore(0x00, hex"23b872dd")
+            mstore(0x04, buyer)
+            mstore(0x24, caller())
+            mstore(0x44, totalOrderAmount)
 
-                mstore(0x00, hex"23b872dd") 
-                mstore(0x04, buyer) 
-                mstore(0x24, caller()) 
-                mstore(0x44, totalOrderAmount) 
-
-                // Execute the transfer
-                if iszero(call(gas(), stable, 0, 0x00, 0x64, 0, 0)) {
-                    revert(0, 0)
-                }
-    
+            // Execute the transfer
+            if iszero(call(gas(), stable, 0, 0x00, 0x64, 0, 0)) {
+                revert(0, 0)
+            }
         }
-    
+
         uint256 amount = order.tokenAmount;
         address token = order.tokenAddress;
-         assembly{
-      
-                mstore(0x00, hex"23b872dd") 
-                mstore(0x04, caller()) 
-                mstore(0x24, buyer) 
-                mstore(0x44, amount) 
+        assembly {
+            mstore(0x00, hex"23b872dd")
+            mstore(0x04, caller())
+            mstore(0x24, buyer)
+            mstore(0x44, amount)
 
-                // Execute the transfer
-                if iszero(call(gas(), token, 0, 0x00, 0x64, 0, 0)) {
-                    revert(0, 0)
-                }
+            // Execute the transfer
+            if iszero(call(gas(), token, 0, 0x00, 0x64, 0, 0)) {
+                revert(0, 0)
             }
-     
+        }
+
         // Void order
         delete orders[_orderId];
 
